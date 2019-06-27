@@ -11,8 +11,7 @@ class Counter extends Component {
   //   this.handleIncrement = this.handleIncrement.bind(this);
   // }
 
-  handleIncrement = product => {
-    console.log(product);
+  handleIncrement = () => {
     this.setState({ value: this.state.value + 1 });
   };
 
@@ -27,31 +26,18 @@ class Counter extends Component {
     return classes;
   }
 
-  renderTags() {
-    if (this.state.tags.length === 0) return <p>There is no tags</p>;
-
-    return (
-      <ul>
-        <React.Fragment>
-          <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
-          <button
-            onClick={() => {
-              this.handleIncrement({ id: 1 });
-            }}
-            className="btn btn-secondary btn-sm"
-          >
-            Incement
-          </button>
-        </React.Fragment>
-      </ul>
-    );
-  }
-
   render() {
     return (
       <div>
-        {this.state.tags.length === 0 && "Please set new elements"}
-        {this.renderTags()}
+        <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
+        <button
+          onClick={() => {
+            this.handleIncrement();
+          }}
+          className="btn btn-secondary btn-sm"
+        >
+          Incement
+        </button>
       </div>
     );
   }
