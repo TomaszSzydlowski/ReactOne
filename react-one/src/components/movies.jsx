@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
+import { getGenres } from "../services/fakeGenreService";
 import Like from "./comman/like";
 import Pagination from "./comman/pagination";
 import { paginate } from "../utlis/paginate";
+import ListGroup from "../components/comman/listGroup";
 
 class Movies extends Component {
   state = {
     movies: getMovies(),
+    currentGenre: "Action",
     currentPage: 1,
     pageSize: 4
   };
@@ -28,16 +31,31 @@ class Movies extends Component {
     this.setState({ currentPage: page });
   };
 
+  handleCurrentGenreChange = currentGenre => {
+    this.setState({ currentGenre });
+  };
+
   render() {
     const { length: count } = this.state.movies;
-    const { pageSize, currentPage, movies: allMovies } = this.state;
+    const {
+      pageSize,
+      currentPage,
+      movies: allMovies,
+      currentGenre
+    } = this.state;
 
     if (count === 0) return <p>Please add new data to database</p>;
 
-    const movies = paginate(allMovies, currentPage, pageSize);
+    const allMoviesGenre = allMovies.filter(m => m.genre.name === currentGenre);
+    const movies = paginate(allMoviesGenre, currentPage, pageSize);
 
     return (
       <React.Fragment>
+        <ListGroup
+          genres={getGenres()}
+          currentGenre={currentGenre}
+          onCurrentGenreChange={this.handleCurrentGenreChange}
+        />
         <p>Showing {count} movies in the database</p>
         <table className="table">
           <thead>
@@ -76,7 +94,7 @@ class Movies extends Component {
           </tbody>
         </table>
         <Pagination
-          itemCount={count}
+          itemCount={allMoviesGenre.length}
           pageSize={pageSize}
           currentPage={currentPage}
           onPageChange={this.handlePageChange}
