@@ -1,6 +1,6 @@
 import React from "react";
 
-const Input = ({ name, label, error, options, ...rest }) => {
+const Select = ({ name, label, error, options, ...rest }) => {
   return (
     <div className="form-group">
       <label htmlFor={name}>{label}</label>
@@ -17,4 +17,4 @@ const Input = ({ name, label, error, options, ...rest }) => {
   );
 };
 
-export default Input;
+export default Select;

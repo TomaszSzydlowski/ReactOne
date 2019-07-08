@@ -7,6 +7,7 @@ import ListGroup from "../components/comman/listGroup";
 import MoviesTable from "./moviesTable";
 import { Link } from "react-router-dom";
 import _ from "lodash";
+import Input from "./comman/input";
 
 class Movies extends Component {
   state = {
@@ -15,7 +16,8 @@ class Movies extends Component {
     selectedGenre: {},
     currentPage: 1,
     pageSize: 4,
-    sortColumn: { path: "title", order: "asc" }
+    sortColumn: { path: "title", order: "asc" },
+    search: { search: "" }
   };
 
   componentDidMount() {
@@ -48,6 +50,27 @@ class Movies extends Component {
     this.setState({ sortColumn });
   };
 
+  handleSearchChange = ({ currentTarget: input }) => {
+    const search = { ...this.state.search };
+    const selectedGenre = { ...this.state.selectedGenre };
+    selectedGenre._id = "";
+    selectedGenre.name = "All Genres";
+    search[input.name] = input.value;
+    this.setState({ selectedGenre, search });
+  };
+
+  getSearchMovie = () => {
+    const { movies: allMovies, search } = this.state;
+    const searchedMovie =
+      search["search"] === ""
+        ? allMovies
+        : allMovies.filter(m =>
+            m.title.toLowerCase().includes(search["search"].toLowerCase())
+          );
+    console.log(search["search"]);
+    return searchedMovie;
+  };
+
   getPageData = () => {
     const {
       pageSize,
@@ -57,10 +80,13 @@ class Movies extends Component {
       sortColumn
     } = this.state;
 
+    const searchedMovie = this.getSearchMovie();
+    console.log(searchedMovie);
+
     const filtered =
       selectedGenre && selectedGenre._id
-        ? allMovies.filter(m => m.genre._id === selectedGenre._id)
-        : allMovies;
+        ? searchedMovie.filter(m => m.genre._id === selectedGenre._id)
+        : searchedMovie;
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
@@ -83,7 +109,6 @@ class Movies extends Component {
     if (count === 0) return <p>Please add new data to database</p>;
 
     const { totalCount, data: movies } = this.getPageData();
-
     return (
       <div className="row" style={{ margin: "20px 50px 50px" }}>
         <div className="col-2">
@@ -102,6 +127,13 @@ class Movies extends Component {
             New movie
           </Link>
           <p>Showing {totalCount} movies in the database</p>
+          <Input
+            name={"search"}
+            label={null}
+            value={this.state.search["search"]}
+            error={null}
+            onChange={this.handleSearchChange}
+          />
           <MoviesTable
             movies={movies}
             sortColumn={sortColumn}
