@@ -18,8 +18,8 @@ import "./App.css";
 class App extends Component {
   state = {};
 
-  async componentDidMount() {
-    const user = await authService.getCurrentUser();
+  componentDidMount() {
+    const user = authService.getCurrentUser();
     this.setState({ user });
   }
 
