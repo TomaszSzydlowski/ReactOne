@@ -94,6 +94,7 @@ class Movies extends Component {
 
   render() {
     const { length: count } = this.state.movies;
+    const { user } = this.props;
 
     const {
       pageSize,
@@ -117,13 +118,15 @@ class Movies extends Component {
           />
         </div>
         <div className="col">
-          <Link
-            to="/movies/new"
-            className="btn btn-primary"
-            style={{ marginBottom: "20px" }}
-          >
-            New movie
-          </Link>
+          {user && (
+            <Link
+              to="/movies/new"
+              className="btn btn-primary"
+              style={{ marginBottom: "20px" }}
+            >
+              New movie
+            </Link>
+          )}
           <p>Showing {totalCount} movies in the database</p>
           <SearchBox value={searchQuery} onChange={this.handleSearch} />
           <MoviesTable
