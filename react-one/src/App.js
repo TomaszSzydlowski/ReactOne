@@ -18,7 +18,7 @@ class App extends Component {
   state = {};
 
   async componentDidMount() {
-    const user = await authService.getCurrentUser;
+    const user = await authService.getCurrentUser();
     this.setState({ user });
   }
 
