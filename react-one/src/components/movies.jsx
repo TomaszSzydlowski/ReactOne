@@ -105,8 +105,6 @@ class Movies extends Component {
       searchQuery
     } = this.state;
 
-    if (count === 0) return <p>Please add new data to database</p>;
-
     const { totalCount, data: movies } = this.getPageData();
     return (
       <div className="row" style={{ margin: "20px 50px 50px" }}>
