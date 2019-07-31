@@ -1,10 +1,8 @@
 import http from "./httpService";
-import { apiUrl } from "../config.json";
-
 
 function movieUrl(id) {
-  if (id) return `${apiUrl}/movies/${id}`;
-  return `${apiUrl}/movies`;
+  if (id) return `/movies/${id}`;
+  return `/movies`;
 }
 
 export function getMovies() {
