@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { getMovies } from "../services/fakeMovieService";
-import { getGenres } from "../services/fakeGenreService";
+import { toast } from "react-toastify";
+import { getMovies, deleteMovie } from "../services/movieService";
+import { getGenres } from "../services/genreService";
 import Pagination from "./comman/pagination";
 import { paginate } from "../utlis/paginate";
 import ListGroup from "../components/comman/listGroup";
@@ -20,14 +21,26 @@ class Movies extends Component {
     searchQuery: ""
   };
 
-  componentDidMount() {
-    const genres = [{ _id: "", name: "All Genres" }, ...getGenres()];
-    this.setState({ movies: getMovies(), genres });
+  async componentDidMount() {
+    const { data } = await getGenres();
+    const { data: movies } = await getMovies();
+    const genres = [{ _id: "", name: "All Genres" }, ...data];
+    this.setState({ movies, genres });
   }
 
-  handleDelete = movie => {
-    const movies = this.state.movies.filter(m => m._id !== movie._id);
+  handleDelete = async movie => {
+    const orginalMovies = this.state.movies;
+
+    const movies = orginalMovies.filter(m => m._id !== movie._id);
     this.setState({ movies });
+    try {
+      await deleteMovie(movie._id);
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404) {
+        toast.error("This movie has already been deleted.");
+      }
+      this.setState({ movies: orginalMovies });
+    }
   };
 
   handleLike = movie => {
@@ -81,6 +94,7 @@ class Movies extends Component {
 
   render() {
     const { length: count } = this.state.movies;
+    const { user } = this.props;
 
     const {
       pageSize,
@@ -90,8 +104,6 @@ class Movies extends Component {
       sortColumn,
       searchQuery
     } = this.state;
-
-    if (count === 0) return <p>Please add new data to database</p>;
 
     const { totalCount, data: movies } = this.getPageData();
     return (
@@ -104,13 +116,15 @@ class Movies extends Component {
           />
         </div>
         <div className="col">
-          <Link
-            to="/movies/new"
-            className="btn btn-primary"
-            style={{ marginBottom: "20px" }}
-          >
-            New movie
-          </Link>
+          {user && (
+            <Link
+              to="/movies/new"
+              className="btn btn-primary"
+              style={{ marginBottom: "20px" }}
+            >
+              New movie
+            </Link>
+          )}
           <p>Showing {totalCount} movies in the database</p>
           <SearchBox value={searchQuery} onChange={this.handleSearch} />
           <MoviesTable
